@@ -2,9 +2,8 @@ from django.db import models
 
 from students.models import BaseClass,DistrictChoices
 
-# Create your models here.
+class AcademicCounsellors(BaseClass):
 
-class Trainers(BaseClass):
 
     profile = models.OneToOneField('authentication.Profile',on_delete=models.CASCADE)
 
@@ -32,9 +31,9 @@ class Trainers(BaseClass):
     
     stream = models.CharField(max_length=25)
 
-    id_proof = models.FileField(upload_to='trainers/idproof')
+    id_proof = models.FileField(upload_to='academic-counsellor/idproof')
 
-    course = models.ForeignKey('courses.Courses',on_delete=models.CASCADE)
+
 
     def __str__(self):
 
@@ -42,6 +41,8 @@ class Trainers(BaseClass):
     
     class Meta:
 
-        verbose_name = 'Trainers'
+        verbose_name = 'Academic Counsellors'
 
-        verbose_name_plural ='Trainers'
+        verbose_name_plural ='Academic Counsellors'
+
+# Create your models here.
