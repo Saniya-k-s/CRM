@@ -39,7 +39,7 @@ class LoginView(View):
 
                     return redirect('dashboard')
                 
-                elif role in ['Academic counsellor','Trainer']:
+                elif role in ['Academic Counsellor','Trainer']:
 
                     return redirect('students-list')
 

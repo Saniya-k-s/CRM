@@ -7,7 +7,7 @@ from django.views.generic import View
 
 from .models import DistrictChoices,CourseChoices,Batch,TrainerName
 
-from .utility import get_admission_number,get_password
+from .utility import get_admission_number,get_password,send_email
 
 from .models import Students
 
@@ -24,6 +24,18 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator 
 
 from authentication.permissions import permission_roles
+
+import threading
+
+import datetime
+
+# payments related imports
+
+from payments.models import Payment
+
+
+
+
 
 
 
@@ -77,6 +89,15 @@ class StudentsListView(View) :
 
               students = Students.objects.filter(Q(active_status=True)&Q(trainer__profile=request.user)&(Q(first_name__icontains=query)|Q(last_name__icontains=query)|Q(adm_number__icontains=query)|Q(contact_num__icontains=query)|Q(pincode__icontains=query)|Q(house_name__icontains=query)|Q(course__code__icontains=query)|Q(district__icontains=query)))
 
+            elif role in ['Academic Counsellor']:
+
+               students = Students.objects.filter(active_status = True,batch__academic_counsellor__profile=request.user)
+
+
+               if query :
+
+                students= Students.objects.filter(Q(active_status=True)&Q(batch__academic_counsellor__profile=request.user)&(Q(first_name__icontains=query)|Q(last_name__icontains=query)|Q(post_office__icontains=query)|Q(contact__icontains=query)|Q(pin_code__icontains=query)|Q(house_name__icontains=query)|Q(email__icontains=query)|Q(course__name__icontains=query)|Q(batch__name__icontains=query)|Q(district__icontains=query)))
+
 
         else :
 
@@ -102,6 +123,7 @@ class StudentRegistrationView(View):
     def get(self,request,*args,**kwargs):
 
         form  = StudentRegisterForm()
+
 
         data = {'form':form}
 
@@ -136,6 +158,48 @@ class StudentRegistrationView(View):
                 student.profile = profile
 
                 student.save()
+
+                # payment section
+
+                fee = student.course.offer_fee if student.course.offer_fee else student.course.fee
+
+                Payment.objects.create(student=student,amount=fee)
+
+
+
+                # sending login credentials to students through email
+
+                subject = 'Login Credentials'
+
+                # sender = settings.EMAIL_HOST_USER
+
+                recepients = [student.email]
+
+                template = 'email/login-credentials.html'
+
+                join_date = student.join_date
+
+                date_after_10_days = join_date + datetime.timedelta(days=10)
+
+                print(date_after_10_days)
+
+                context = {'name':f'{student.first_name} {student.last_name}','username':username,'password':password}
+
+                # send_email(subject,template,context,recepients)
+
+                # thread = threading.Thread(target=send_email,args=(subject,recepients,template,context))
+
+                # thread.start()
+
+
+
+               
+
+               
+
+
+
+
 
                 return redirect('students-list')
         

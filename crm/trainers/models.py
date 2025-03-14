@@ -2,7 +2,23 @@ from django.db import models
 
 from students.models import BaseClass,DistrictChoices
 
+import uuid
+
 # Create your models here.
+
+# class BaseClass(models.Model):
+
+#     uuid = models.SlugField(unique=True,default=uuid.uuid4)
+
+#     active_status = models.BooleanField(default=True)
+
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     class Meta:
+
+#         abstract = True
 
 class Trainers(BaseClass):
 
@@ -12,11 +28,11 @@ class Trainers(BaseClass):
 
     last_name = models.CharField(max_length=25)
 
-    employee_id = models.CharField(max_length=10)
+    employee_id = models.CharField(max_length=15)
 
     photo = models.ImageField(upload_to='trainers')
 
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
 
     contact = models.CharField(max_length=12)
 
@@ -28,13 +44,21 @@ class Trainers(BaseClass):
 
     pincode = models.CharField(max_length=6)
 
-    qualification = models.CharField(max_length=10)
+    qualification = models.CharField(max_length=20)
     
     stream = models.CharField(max_length=25)
 
-    id_proof = models.FileField(upload_to='trainers/idproof')
+    id_card = models.FileField(upload_to='trainers/idproof')
 
-    course = models.ForeignKey('courses.Courses',on_delete=models.CASCADE)
+    # course = models.ForeignKey('Courses',on_delete=models.CASCADE)  
+    
+    # when course dropped and trainer terminated
+
+    course = models.ForeignKey('courses.Courses',null=True,on_delete=models.SET_NULL)
+
+    # join_date = models.DateField(auto_now_add=True)
+
+    # batch = models.ForeignKey('batches.Batches',null=True,on_delete=models.SET_NULL)
 
     def __str__(self):
 

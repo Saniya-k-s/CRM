@@ -6,6 +6,7 @@ from students.models import BaseClass
 
 class Batches(BaseClass):
 
+
     name = models.CharField(max_length=15)
 
     start_date = models.DateField()
